@@ -12,4 +12,4 @@ class Bcrypt {
     }
 }
 
-export const bcrypt = new Bcrypt();
+export const bcryptUtil = new Bcrypt();
