@@ -1,0 +1,26 @@
+# Node.js dependencies
+node_modules/
+
+# Coverage
+coverage/
+
+# Build output
+dist/
+
+# Prisma generated files
+src/generated/prisma
+
+
+# Log files
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Editor generated files
+.vscode/
+*.iml
+*.idea/
+
+.env
