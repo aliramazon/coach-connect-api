@@ -1,0 +1,38 @@
+enum BookingStatus {
+    ACTIVE
+    COMPLETED
+    CANCELLED
+    NO_SHOW
+}
+
+enum NoShowParty {
+    STUDENT
+    COACH
+}
+
+enum CompletedBy {
+    SYSTEM
+    STUDENT
+    COACH
+}
+
+model Booking {
+    id          String        @id @default(cuid())
+    slotId      String        @unique
+    studentId   String
+    coachId     String
+    status      BookingStatus @default(ACTIVE)
+    noShowBy    NoShowParty?
+    completedAt DateTime?
+    completedBy CompletedBy?
+    createdAt   DateTime      @default(now())
+    updatedAt   DateTime      @updatedAt
+
+    slot    Slot        @relation(fields: [slotId], references: [id], onDelete: Cascade)
+    student User        @relation("StudentBookings", fields: [studentId], references: [id], onDelete: Cascade)
+    coach   User        @relation("CoachBookings", fields: [coachId], references: [id], onDelete: Cascade)
+    review  CallReview?
+
+    @@index([studentId])
+    @@index([coachId])
+}

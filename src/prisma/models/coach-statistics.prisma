@@ -1,0 +1,11 @@
+model CoachStatistics {
+    id             String   @id @default(cuid())
+    coachId        String   @unique
+    totalCalls     Int      @default(0)
+    averageRating  Float?
+    totalSlots     Int      @default(0)
+    completedSlots Int      @default(0)
+    lastUpdated    DateTime @default(now())
+
+    coach User @relation(fields: [coachId], references: [id], onDelete: Cascade)
+}

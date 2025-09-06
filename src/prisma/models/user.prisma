@@ -1,0 +1,22 @@
+enum UserRole {
+    COACH
+    STUDENT
+}
+
+model User {
+    id          String   @id @default(cuid())
+    email       String   @unique
+    firstName   String
+    lastName    String
+    phoneNumber String
+    role        UserRole
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    // Back-relations (Prisma only, not DB tables)
+    coachSlots      Slot[]    @relation("CoachSlots")
+    studentBookings Booking[] @relation("StudentBookings")
+    coachBookings   Booking[] @relation("CoachBookings")
+
+    CoachStatistic CoachStatistics?
+}

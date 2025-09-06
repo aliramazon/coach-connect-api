@@ -1,0 +1,21 @@
+enum SlotStatus {
+    AVAILABLE
+    UNAVAILABLE
+}
+
+model Slot {
+    id        String     @id @default(cuid())
+    coachId   String
+    startTime DateTime
+    endTime   DateTime
+    status    SlotStatus @default(AVAILABLE)
+    createdAt DateTime   @default(now())
+    updatedAt DateTime   @updatedAt
+
+    coach   User     @relation("CoachSlots", fields: [coachId], references: [id], onDelete: Cascade)
+    booking Booking?
+
+    @@unique([coachId, startTime])
+    @@index([coachId])
+    @@index([startTime])
+}
