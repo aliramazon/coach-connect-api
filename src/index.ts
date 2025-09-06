@@ -11,8 +11,13 @@ app.get('/healthz', (_req, res) => {
     res.json({ status: 'ok' });
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = Number(process.env.PORT) || 3000;
+const HOST = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost';
 
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+app.listen(PORT, HOST, () => {
+    if (HOST === 'localhost') {
+        console.log(`🚀 Server running at http://${HOST}:${PORT}`);
+    } else {
+        console.log(`🚀 Server running on port ${PORT}`);
+    }
 });
