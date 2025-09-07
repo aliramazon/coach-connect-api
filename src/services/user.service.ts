@@ -13,6 +13,7 @@ const create = async (data: Prisma.UserCreateInput) => {
         data: {
             ...data,
             inviteToken: hashedInviteToken,
+            email: data.email.toLowerCase(),
         },
         omit: {
             password: true,
@@ -54,7 +55,7 @@ const createPassword = async (
     });
 };
 
-export const login = async (email: string, password: string) => {
+const login = async (email: string, password: string) => {
     const user = await prisma.user.findUnique({
         where: {
             email: email,
@@ -93,4 +94,5 @@ export const login = async (email: string, password: string) => {
 export const userService = {
     createPassword,
     create,
+    login,
 };
