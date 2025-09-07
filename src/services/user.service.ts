@@ -1,3 +1,4 @@
+import jwt from 'jsonwebtoken';
 import { Prisma } from '../generated/prisma/client';
 import { UserStatus } from '../generated/prisma/enums';
 import { prisma } from '../prisma';
@@ -5,7 +6,7 @@ import { bcryptUtil } from '../utils/bcrypt';
 import { cryptoUtil } from '../utils/crypto';
 import { CustomError } from '../utils/custom-error';
 
-export const createUser = async (data: Prisma.UserCreateInput) => {
+const create = async (data: Prisma.UserCreateInput) => {
     const inviteToken = cryptoUtil.createToken();
     const hashedInviteToken = cryptoUtil.hash(inviteToken);
     const createdUser = await prisma.user.create({
@@ -22,7 +23,7 @@ export const createUser = async (data: Prisma.UserCreateInput) => {
     return { createdUser, inviteToken };
 };
 
-export const createPassword = async (
+const createPassword = async (
     inviteToken: string,
     password: string,
     email: string,
@@ -48,6 +49,48 @@ export const createPassword = async (
             password: hashedPassword,
             status: UserStatus.ACTIVE,
             inviteToken: null,
+            joinDate: new Date(),
         },
     });
+};
+
+export const login = async (email: string, password: string) => {
+    const user = await prisma.user.findUnique({
+        where: {
+            email: email,
+        },
+    });
+
+    if (!user) throw CustomError.unauthorized('Wrong credentionals');
+    if (user.status === UserStatus.INACTIVE) {
+        throw CustomError.badRequest('Inactive Account');
+    }
+
+    if (user.password) {
+        const isPasswordMatches = await bcryptUtil.compare(
+            password,
+            user.password,
+        );
+        if (!isPasswordMatches) {
+            throw CustomError.unauthorized('Wrong credentionals');
+        }
+    }
+
+    const authToken = jwt.sign(
+        {
+            id: user.id,
+            role: user.role,
+        },
+        process.env.JWT_SECRET as jwt.Secret,
+        { expiresIn: '2 days' },
+    );
+
+    const csrfToken = cryptoUtil.createToken();
+
+    return { authToken, csrfToken };
+};
+
+export const userService = {
+    createPassword,
+    create,
 };

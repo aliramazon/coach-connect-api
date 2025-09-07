@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 
 class Crypto {
-    generateRandomString = (length = 32): string => {
+    private generateRandomString = (length = 32): string => {
         return crypto
             .randomBytes(length)
             .toString('base64url') // Node v15+ supports base64url
