@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { config } from 'dotenv';
-import { UserRole } from '../../generated/prisma/enums';
+
+import { UserRole } from '../../generated/prisma';
 import { userService } from '../../services/user.service';
 config();
 

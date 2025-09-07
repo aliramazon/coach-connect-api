@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
+import { UserStatus } from '../generated/prisma';
 import { Prisma } from '../generated/prisma/client';
-import { UserStatus } from '../generated/prisma/enums';
 import { prisma } from '../prisma';
 import { bcryptUtil } from '../utils/bcrypt';
 import { cryptoUtil } from '../utils/crypto';

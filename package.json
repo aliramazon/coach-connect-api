@@ -12,18 +12,17 @@
     },
     "license": "ISC",
     "author": "Ali Ramazon",
-    "type": "module",
     "main": "index.ts",
     "scripts": {
-        "dev": "NODE_ENV=development ts-node-dev --respawn src/server.ts",
+        "dev": "NODE_ENV=development tsx watch src/server.ts",
         "build": "tsc",
         "start": "node dist/server.js",
-        "prisma:generate": "prisma generate --no-engine",
+        "prisma:g": "prisma generate --no-engine",
         "prisma:studio": "prisma studio",
         "prisma:dev:migrate": "prisma migrate dev",
         "prisma:dev:reset": "prisma migrate reset",
         "prisma:deploy": "prisma migrate deploy",
-        "seed": "ts-node ./src/prisma/seed/seed-users.ts"
+        "seed": "tsx src/prisma/seed/seed-users.ts"
     },
     "dependencies": {
         "@prisma/client": "^6.15.0",
@@ -50,7 +49,7 @@
         "eslint-plugin-import": "^2.32.0",
         "eslint-plugin-prettier": "^5.5.4",
         "prettier": "^3.6.2",
-        "ts-node-dev": "^2.0.0",
+        "tsx": "^4.20.5",
         "typescript": "^5.9.2"
     }
 }
