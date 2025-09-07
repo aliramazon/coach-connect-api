@@ -26,6 +26,8 @@ const generateRandomUserInfo = (role: UserRole) => {
 const generateUsers = () => {
     const users = [];
 
+    users.push(generateRandomUserInfo(UserRole.ADMIN));
+
     for (let i = 1; i <= 15; i++) {
         users.push(
             generateRandomUserInfo(i <= 10 ? UserRole.STUDENT : UserRole.COACH),

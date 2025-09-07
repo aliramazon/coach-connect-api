@@ -1,6 +1,7 @@
 enum UserRole {
     COACH
     STUDENT
+    ADMIN
 }
 
 enum UserStatus {
