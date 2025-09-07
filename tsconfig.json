@@ -1,23 +1,19 @@
 {
     "compilerOptions": {
         "target": "es2020",
-        "module": "commonjs",
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
         "lib": ["es2020"],
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
-        "moduleResolution": "node",
         "resolveJsonModule": true,
         "skipLibCheck": true,
+        "strict": true,
         "sourceMap": true,
         "outDir": "dist",
-        "baseUrl": ".",
-        "paths": {
-            "*": ["node_modules/*"]
-        },
-        "strict": true,
+        "rootDir": "src",
         "noImplicitReturns": true,
-        "noFallthroughCasesInSwitch": true,
-        "rootDir": "src"
+        "noFallthroughCasesInSwitch": true
     },
     "include": ["src/**/*"],
     "exclude": ["node_modules", "dist"]
