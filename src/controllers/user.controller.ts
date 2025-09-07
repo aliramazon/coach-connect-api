@@ -20,14 +20,14 @@ const login = catchAsync(async (req, res) => {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'none',
-        maxAge: 60 * 60 * 1000,
+        maxAge: 2 * 24 * 60 * 60 * 1000,
     });
 
     res.cookie('csrfToken', csrfToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'none',
-        maxAge: 60 * 60 * 1000,
+        maxAge: 2 * 24 * 60 * 60 * 1000,
     });
 
     res.status(200).json({
