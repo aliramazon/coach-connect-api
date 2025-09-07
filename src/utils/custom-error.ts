@@ -82,8 +82,8 @@ export class CustomError extends Error {
         );
     }
 
-    static unauthorized(
-        message: string = 'Unauthorized',
+    static authenticationFailed(
+        message: string = 'Invalid credentials',
         clientType?: string,
         details?: ErrorDetails,
     ) {
@@ -96,7 +96,7 @@ export class CustomError extends Error {
     }
 
     static forbidden(
-        message: string = 'Forbidden',
+        message: string = 'Not authorized',
         clientType?: string,
         details?: ErrorDetails,
     ) {

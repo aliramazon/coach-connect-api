@@ -36,7 +36,7 @@ const createPassword = async (
         where: { inviteToken: hashedInviteToken },
     });
 
-    if (!user) throw CustomError.unauthorized('INVALID_TOKEN');
+    if (!user) throw CustomError.authenticationFailed();
     if (user.email !== email) {
         throw CustomError.notFound('User not found');
     }
@@ -62,7 +62,7 @@ const login = async (email: string, password: string) => {
         },
     });
 
-    if (!user) throw CustomError.unauthorized('Wrong credentionals');
+    if (!user) throw CustomError.authenticationFailed();
     if (user.status === UserStatus.INACTIVE) {
         throw CustomError.badRequest('Inactive Account');
     }
@@ -73,7 +73,7 @@ const login = async (email: string, password: string) => {
             user.password,
         );
         if (!isPasswordMatches) {
-            throw CustomError.unauthorized('Wrong credentionals');
+            throw CustomError.authenticationFailed();
         }
     }
 
