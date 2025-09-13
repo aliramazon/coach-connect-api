@@ -38,11 +38,11 @@ const login = catchAsync(async (req, res) => {
 });
 
 const impersonate = catchAsync(async (req, res) => {
-    const { userId } = req.params;
-    if (!userId) {
+    const { id } = req.params;
+    if (!id) {
         throw CustomError.badRequest('Missing userId');
     }
-    const authToken = await userService.impersonate(userId);
+    const authToken = await userService.impersonate(id);
 
     res.cookie('impersonationToken', authToken, {
         httpOnly: true,
@@ -60,6 +60,7 @@ const impersonate = catchAsync(async (req, res) => {
 export const getOne = catchAsync(async (req, res) => {
     const { id } = req.params;
     const { user } = req;
+    const impersonationToken = req.cookies.impersonationToken;
 
     const targetUserId = id ?? user?.id;
 
@@ -68,6 +69,8 @@ export const getOne = catchAsync(async (req, res) => {
     res.status(200).json({
         success: true,
         data: userData,
+        csrfToken: req.cookies.csrfToken,
+        isImpersonating: impersonationToken ? true : false,
     });
 });
 
