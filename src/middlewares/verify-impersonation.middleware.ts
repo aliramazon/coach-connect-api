@@ -3,11 +3,11 @@ import { UserRole } from '../generated/prisma';
 import { catchAsync } from '../utils/catch-async';
 import { CustomError } from '../utils/custom-error';
 
-export const verifyLoginAs = catchAsync((req, res, next) => {
+export const verifyImpersonation = catchAsync((req, res, next) => {
     const { user } = req;
 
     if (user?.role === UserRole.ADMIN) {
-        const token = req.cookies.loginAsAuthToken;
+        const token = req.cookies.impersonationToken;
 
         if (token) {
             try {
@@ -17,7 +17,7 @@ export const verifyLoginAs = catchAsync((req, res, next) => {
                 ) as JwtPayload;
 
                 if (decoded.id && decoded.role) {
-                    req.loginAs = {
+                    req.impersonatedUser = {
                         id: decoded.id,
                         role: decoded.role,
                     };

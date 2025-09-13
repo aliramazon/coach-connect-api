@@ -37,14 +37,14 @@ const login = catchAsync(async (req, res) => {
     });
 });
 
-const loginAs = catchAsync(async (req, res) => {
-    const { userId }: { userId: string } = req.body;
+const impersonate = catchAsync(async (req, res) => {
+    const { userId } = req.params;
     if (!userId) {
         throw CustomError.badRequest('Missing userId');
     }
-    const authToken = await userService.loginAs(userId);
+    const authToken = await userService.impersonate(userId);
 
-    res.cookie('loginAsAuthToken', authToken, {
+    res.cookie('impersonationToken', authToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'none',
@@ -53,16 +53,17 @@ const loginAs = catchAsync(async (req, res) => {
 
     res.status(200).json({
         success: true,
-        message: 'Login successful',
+        message: 'Impersonation successful',
     });
 });
 
-export const getMe = catchAsync(async (req, res) => {
-    const { user, loginAs } = req;
+export const getOne = catchAsync(async (req, res) => {
+    const { id } = req.params;
+    const { user } = req;
 
-    const effectiveUser = loginAs ?? user!;
+    const targetUserId = id ?? user?.id;
 
-    const userData = await userService.getMe(effectiveUser.id);
+    const userData = await userService.getOne(targetUserId);
 
     res.status(200).json({
         success: true,
@@ -81,7 +82,7 @@ export const getAll = catchAsync(async (req, res) => {
 
 export const userController = {
     login,
-    loginAs,
-    getMe,
+    impersonate,
+    getOne,
     getAll,
 };

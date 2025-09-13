@@ -7,7 +7,7 @@ declare global {
                 id: string;
                 role: UserRole;
             };
-            loginAs?: {
+            impersonatedUser?: {
                 id: string;
                 role: Omit<UserRole, 'ADMIN'>;
             };

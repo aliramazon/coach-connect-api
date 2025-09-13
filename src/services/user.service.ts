@@ -91,7 +91,7 @@ const login = async (email: string, password: string) => {
     return { authToken, csrfToken };
 };
 
-export const getMe = async (id: string) => {
+export const getOne = async (id: string) => {
     const user = await prisma.user.findUnique({
         where: {
             id: id,
@@ -109,7 +109,7 @@ export const getMe = async (id: string) => {
     return user;
 };
 
-export const loginAs = async (userId: string) => {
+export const impersonate = async (userId: string) => {
     const user = await prisma.user.findUnique({
         where: {
             id: userId,
@@ -156,7 +156,7 @@ export const userService = {
     createPassword,
     create,
     login,
-    loginAs,
-    getMe,
+    impersonate,
+    getOne,
     getAll,
 };
