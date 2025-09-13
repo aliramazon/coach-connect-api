@@ -6,9 +6,7 @@ export const authenticate = catchAsync(async (req, res, next) => {
     const authToken = req.cookies.authToken;
 
     if (!authToken) {
-        throw CustomError.authenticationFailed(
-            'Session expired, please login again',
-        );
+        throw CustomError.authenticationFailed();
     }
 
     try {
@@ -24,12 +22,6 @@ export const authenticate = catchAsync(async (req, res, next) => {
 
         next();
     } catch (error) {
-        if (error instanceof Error && error.name === 'TokenExpiredError') {
-            throw CustomError.authenticationFailed(
-                'Session expired, please login again',
-            );
-        }
-
         throw CustomError.authenticationFailed('Invalid credentials');
     }
 });

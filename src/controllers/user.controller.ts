@@ -37,6 +37,51 @@ const login = catchAsync(async (req, res) => {
     });
 });
 
+const loginAs = catchAsync(async (req, res) => {
+    const { userId }: { userId: string } = req.body;
+    if (!userId) {
+        throw CustomError.badRequest('Missing userId');
+    }
+    const authToken = await userService.loginAs(userId);
+
+    res.cookie('loginAsAuthToken', authToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'none',
+        maxAge: 2 * 24 * 60 * 60 * 1000,
+    });
+
+    res.status(200).json({
+        success: true,
+        message: 'Login successful',
+    });
+});
+
+export const getMe = catchAsync(async (req, res) => {
+    const { user, loginAs } = req;
+
+    const effectiveUser = loginAs ?? user!;
+
+    const userData = await userService.getMe(effectiveUser.id);
+
+    res.status(200).json({
+        success: true,
+        data: userData,
+    });
+});
+
+export const getAll = catchAsync(async (req, res) => {
+    const users = await userService.getAll();
+
+    res.status(200).json({
+        success: true,
+        data: users,
+    });
+});
+
 export const userController = {
     login,
+    loginAs,
+    getMe,
+    getAll,
 };

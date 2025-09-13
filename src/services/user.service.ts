@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { UserStatus } from '../generated/prisma';
+import { UserRole, UserStatus } from '../generated/prisma';
 import { Prisma } from '../generated/prisma/client';
 import { prisma } from '../prisma';
 import { bcryptUtil } from '../utils/bcrypt';
@@ -91,8 +91,72 @@ const login = async (email: string, password: string) => {
     return { authToken, csrfToken };
 };
 
+export const getMe = async (id: string) => {
+    const user = await prisma.user.findUnique({
+        where: {
+            id: id,
+        },
+        omit: {
+            password: true,
+            inviteToken: true,
+        },
+    });
+
+    if (!user) {
+        throw CustomError.notFound('User not found');
+    }
+
+    return user;
+};
+
+export const loginAs = async (userId: string) => {
+    const user = await prisma.user.findUnique({
+        where: {
+            id: userId,
+        },
+
+        omit: {
+            inviteToken: true,
+            password: true,
+        },
+    });
+
+    if (!user) {
+        throw CustomError.notFound('User not found');
+    }
+
+    const authToken = jwt.sign(
+        {
+            id: user.id,
+            role: user.role,
+        },
+        process.env.JWT_SECRET as jwt.Secret,
+        { expiresIn: '2 days' },
+    );
+
+    return authToken;
+};
+
+export const getAll = async () => {
+    const users = await prisma.user.findMany({
+        where: {
+            NOT: {
+                role: UserRole.ADMIN,
+            },
+        },
+        omit: {
+            password: true,
+            inviteToken: true,
+        },
+    });
+
+    return users;
+};
 export const userService = {
     createPassword,
     create,
     login,
+    loginAs,
+    getMe,
+    getAll,
 };

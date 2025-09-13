@@ -7,6 +7,10 @@ declare global {
                 id: string;
                 role: UserRole;
             };
+            loginAs?: {
+                id: string;
+                role: Omit<UserRole, 'ADMIN'>;
+            };
         }
     }
 }
