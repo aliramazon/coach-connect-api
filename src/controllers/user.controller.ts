@@ -44,6 +44,17 @@ const login = catchAsync(async (req, res) => {
     });
 });
 
+const logout = catchAsync(async (req, res) => {
+    res.clearCookie('authToken');
+    res.clearCookie('csrfToken');
+    res.clearCookie('impersonationToken');
+
+    res.status(200).json({
+        success: true,
+        message: 'Logout successful',
+    });
+});
+
 const impersonate = catchAsync(async (req, res) => {
     const { id } = req.params;
     if (!id) {
@@ -95,4 +106,5 @@ export const userController = {
     impersonate,
     getOne,
     getAll,
+    logout,
 };

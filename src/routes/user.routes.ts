@@ -23,6 +23,7 @@ userRouter.get(
     userController.getAll,
 );
 userRouter.get('/me', authenticate, userController.getOne);
+userRouter.post('/logout', userController.logout);
 userRouter.get(
     '/:id',
     authenticate,
