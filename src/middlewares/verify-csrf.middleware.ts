@@ -11,11 +11,7 @@ export const verifyCSRF = catchAsync(async (req, _, next) => {
         );
     }
 
-    if (!csrfHeader) {
-        throw CustomError.forbidden('Invalid request');
-    }
-
-    if (csrfCookie !== csrfHeader) {
+    if (!csrfHeader || csrfCookie !== csrfHeader) {
         throw CustomError.forbidden('Invalid request');
     }
 

@@ -22,13 +22,12 @@ userRouter.get(
     requireRole([UserRole.ADMIN]),
     userController.getAll,
 );
+userRouter.get('/me', authenticate, userController.getOne);
 userRouter.get(
     '/:id',
     authenticate,
-    verifyCSRF,
     requireRole([UserRole.ADMIN]),
     userController.getOne,
 );
-userRouter.get('/me', authenticate, verifyCSRF, userController.getOne);
 
 export { userRouter };

@@ -88,7 +88,7 @@ const login = async (email: string, password: string) => {
 
     const csrfToken = cryptoUtil.createToken();
 
-    return { authToken, csrfToken };
+    return { authToken, csrfToken, role: user.role };
 };
 
 export const getOne = async (id: string) => {

@@ -1,6 +1,7 @@
 import { userService } from '../services/user.service';
 import { catchAsync } from '../utils/catch-async';
 import { CustomError } from '../utils/custom-error';
+import { isProd } from '../utils/env';
 
 type LoginBody = {
     email?: string;
@@ -14,19 +15,22 @@ const login = catchAsync(async (req, res) => {
         throw CustomError.badRequest('Email and password are required');
     }
 
-    const { authToken, csrfToken } = await userService.login(email, password);
+    const { authToken, csrfToken, role } = await userService.login(
+        email,
+        password,
+    );
 
     res.cookie('authToken', authToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'none',
+        secure: isProd,
+        sameSite: isProd ? 'none' : 'lax',
         maxAge: 2 * 24 * 60 * 60 * 1000,
     });
 
     res.cookie('csrfToken', csrfToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'none',
+        secure: isProd,
+        sameSite: isProd ? 'none' : 'lax',
         maxAge: 2 * 24 * 60 * 60 * 1000,
     });
 
@@ -34,6 +38,9 @@ const login = catchAsync(async (req, res) => {
         success: true,
         message: 'Login successful',
         csrfToken,
+        data: {
+            role,
+        },
     });
 });
 
