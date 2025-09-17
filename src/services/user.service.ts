@@ -134,7 +134,7 @@ export const impersonate = async (userId: string) => {
         { expiresIn: '2 days' },
     );
 
-    return authToken;
+    return { authToken, user };
 };
 
 export const getAll = async () => {

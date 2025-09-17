@@ -9,7 +9,11 @@ declare global {
             };
             impersonatedUser?: {
                 id: string;
-                role: Omit<UserRole, 'ADMIN'>;
+                role: UserRole;
+            };
+            effectiveUser?: {
+                id: string;
+                role: UserRole;
             };
         }
     }

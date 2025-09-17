@@ -1,3 +1,4 @@
+import { User } from '../generated/prisma';
 import { userService } from '../services/user.service';
 import { catchAsync } from '../utils/catch-async';
 import { CustomError } from '../utils/custom-error';
@@ -60,35 +61,60 @@ const impersonate = catchAsync(async (req, res) => {
     if (!id) {
         throw CustomError.badRequest('Missing userId');
     }
-    const authToken = await userService.impersonate(id);
+    const { authToken, user } = await userService.impersonate(id);
 
     res.cookie('impersonationToken', authToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'none',
+        secure: isProd,
+        sameSite: isProd ? 'none' : 'lax',
         maxAge: 2 * 24 * 60 * 60 * 1000,
     });
 
     res.status(200).json({
         success: true,
         message: 'Impersonation successful',
+        data: {
+            user,
+        },
+    });
+});
+
+const stopImpersonation = catchAsync(async (req, res) => {
+    res.clearCookie('impersonationToken');
+
+    res.status(200).json({
+        success: true,
+        message: 'Impersonation stopped successfully',
     });
 });
 
 export const getOne = catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const { user } = req;
-    const impersonationToken = req.cookies.impersonationToken;
+    const { effectiveUser, impersonatedUser, user } = req;
 
-    const targetUserId = id ?? user?.id;
+    const effectiveUserData = await userService.getOne(effectiveUser!.id);
 
-    const userData = await userService.getOne(targetUserId);
+    let adminUser;
+    if (impersonatedUser) {
+        adminUser = await userService.getOne(user!.id);
+    }
+
+    const data: {
+        impersonatedUser?: Omit<User, 'inviteToken' | 'password'>;
+        user?: Omit<User, 'inviteToken' | 'password'>;
+    } = {};
+
+    if (impersonatedUser) {
+        data.impersonatedUser = effectiveUserData;
+        data.user = adminUser;
+    } else {
+        data.user = effectiveUserData;
+    }
 
     res.status(200).json({
         success: true,
-        data: userData,
+        data: data,
         csrfToken: req.cookies.csrfToken,
-        isImpersonating: impersonationToken ? true : false,
+        isImpersonating: impersonatedUser ? true : false,
     });
 });
 
@@ -107,4 +133,5 @@ export const userController = {
     getOne,
     getAll,
     logout,
+    stopImpersonation,
 };

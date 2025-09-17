@@ -28,5 +28,10 @@ export const verifyImpersonation = catchAsync((req, res, next) => {
         }
     }
 
+    const targetUser = req.impersonatedUser || user;
+    if (!targetUser) {
+        throw CustomError.authenticationFailed();
+    }
+    req.effectiveUser = targetUser;
     return next();
 });
