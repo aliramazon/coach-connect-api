@@ -25,14 +25,14 @@ const login = catchAsync(async (req, res) => {
         httpOnly: true,
         secure: isProd,
         sameSite: isProd ? 'none' : 'lax',
-        maxAge: 1000 * 60,
+        maxAge: 1000 * 60 * 60 * 24,
     });
 
     res.cookie('csrfToken', csrfToken, {
         httpOnly: true,
         secure: isProd,
         sameSite: isProd ? 'none' : 'lax',
-        maxAge: 1000 * 60,
+        maxAge: 1000 * 60 * 60 * 24,
     });
 
     res.status(200).json({
@@ -67,7 +67,7 @@ const impersonate = catchAsync(async (req, res) => {
         httpOnly: true,
         secure: isProd,
         sameSite: isProd ? 'none' : 'lax',
-        maxAge: 2 * 24 * 60 * 60 * 1000,
+        maxAge: 15 * 60 * 1000,
     });
 
     res.status(200).json({
