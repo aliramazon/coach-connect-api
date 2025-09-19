@@ -58,7 +58,7 @@ const createPassword = async (
 const login = async (email: string, password: string) => {
     const user = await prisma.user.findUnique({
         where: {
-            email: email,
+            email: email.toLowerCase(),
         },
     });
 
@@ -88,7 +88,18 @@ const login = async (email: string, password: string) => {
 
     const csrfToken = cryptoUtil.createToken();
 
-    return { authToken, csrfToken, role: user.role };
+    const safeUser = {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        status: user.status,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+    };
+
+    return { authToken, csrfToken, user: safeUser };
 };
 
 export const getOne = async (id: string) => {

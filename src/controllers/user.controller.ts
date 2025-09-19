@@ -16,7 +16,7 @@ const login = catchAsync(async (req, res) => {
         throw CustomError.badRequest('Email and password are required');
     }
 
-    const { authToken, csrfToken, role } = await userService.login(
+    const { authToken, csrfToken, user } = await userService.login(
         email,
         password,
     );
@@ -25,14 +25,14 @@ const login = catchAsync(async (req, res) => {
         httpOnly: true,
         secure: isProd,
         sameSite: isProd ? 'none' : 'lax',
-        maxAge: 2 * 24 * 60 * 60 * 1000,
+        maxAge: 1000 * 60,
     });
 
     res.cookie('csrfToken', csrfToken, {
         httpOnly: true,
         secure: isProd,
         sameSite: isProd ? 'none' : 'lax',
-        maxAge: 2 * 24 * 60 * 60 * 1000,
+        maxAge: 1000 * 60,
     });
 
     res.status(200).json({
@@ -40,7 +40,7 @@ const login = catchAsync(async (req, res) => {
         message: 'Login successful',
         csrfToken,
         data: {
-            role,
+            user,
         },
     });
 });

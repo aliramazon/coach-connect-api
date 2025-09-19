@@ -10,8 +10,8 @@ interface ErrorDetails {
 
 export class CustomError extends Error {
     statusCode: number;
-    errorType: string;
-    clientErrorType: string;
+    severity: string;
+    errorCode: string;
     isOperational: boolean;
     details?: ErrorDetails;
     timestamp: Date;
@@ -19,7 +19,7 @@ export class CustomError extends Error {
     constructor(
         message: string,
         statusCode: number,
-        clientErrorType?: string,
+        errorCode?: string,
         details?: ErrorDetails,
     ) {
         super(message);
@@ -27,11 +27,10 @@ export class CustomError extends Error {
         this.name = this.constructor.name;
 
         this.statusCode = statusCode;
-        this.errorType = statusCode.toString().startsWith('4')
+        this.severity = statusCode.toString().startsWith('4')
             ? 'fail'
             : 'error';
-        this.clientErrorType =
-            clientErrorType || this.getDefaultClientType(statusCode);
+        this.errorCode = errorCode || this.getDefaultClientType(statusCode);
         this.isOperational = true;
         this.details = details;
         this.timestamp = new Date();
@@ -60,8 +59,8 @@ export class CustomError extends Error {
             name: this.name,
             message: this.message,
             statusCode: this.statusCode,
-            errorType: this.errorType,
-            clientErrorType: this.clientErrorType,
+            severity: this.severity,
+            errorCode: this.errorCode,
             isOperational: this.isOperational,
             details: this.details,
             timestamp: this.timestamp,

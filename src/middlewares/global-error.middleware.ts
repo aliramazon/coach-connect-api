@@ -22,12 +22,12 @@ export class GlobalError {
         let statusCode = 500;
         let message = err.message || 'Internal Server Error';
         let isOperational = false;
-        let clientErrorType = 'UNKNOWN_ERROR';
+        let errorCode = 'UNKNOWN_ERROR';
 
         if (err instanceof CustomError) {
             statusCode = err.statusCode;
             isOperational = true;
-            clientErrorType = err.clientErrorType;
+            errorCode = err.errorCode;
         } else if (
             err &&
             typeof err === 'object' &&
@@ -56,7 +56,7 @@ export class GlobalError {
                 case '23505':
                     statusCode = 409;
                     message = 'This resource already exists';
-                    clientErrorType = 'RESOURCE_CONFLICT';
+                    errorCode = 'RESOURCE_CONFLICT';
                     break;
 
                 // Foreign key violation - generic message
@@ -64,20 +64,20 @@ export class GlobalError {
                     statusCode = 400;
                     message =
                         'Cannot perform this operation due to related data';
-                    clientErrorType = 'VALIDATION_ERROR';
+                    errorCode = 'VALIDATION_ERROR';
                     break;
 
                 case '23502':
                     statusCode = 400;
                     message = 'Required information is missing';
-                    clientErrorType = 'VALIDATION_ERROR';
+                    errorCode = 'VALIDATION_ERROR';
                     break;
 
                 // Check violation - generic validation message
                 case '23514':
                     statusCode = 400;
                     message = 'Invalid data provided';
-                    clientErrorType = 'VALIDATION_ERROR';
+                    errorCode = 'VALIDATION_ERROR';
                     break;
 
                 // Connection errors - generic service message
@@ -87,14 +87,14 @@ export class GlobalError {
                 case '53300': // too many connections
                     statusCode = 503;
                     message = 'Service temporarily unavailable';
-                    clientErrorType = 'SERVICE_UNAVAILABLE';
+                    errorCode = 'SERVICE_UNAVAILABLE';
                     break;
 
                 // Server-side errors - these are code bugs, not user errors
                 case '42601': // syntax error
                     statusCode = 500;
                     message = 'Internal server error';
-                    clientErrorType = 'DATABASE_ERROR';
+                    errorCode = 'DATABASE_ERROR';
                     console.error('SQL Syntax Error - Fix your query!', {
                         code: pgError.code,
                         message: pgError.message,
@@ -107,7 +107,7 @@ export class GlobalError {
                 case '42P01': // undefined table
                     statusCode = 500;
                     message = 'Internal server error';
-                    clientErrorType = 'DATABASE_ERROR';
+                    errorCode = 'DATABASE_ERROR';
                     console.error('Table Not Found - Check table name!', {
                         code: pgError.code,
                         message: pgError.message,
@@ -120,7 +120,7 @@ export class GlobalError {
                 case '42703': // undefined column
                     statusCode = 500;
                     message = 'Internal server error';
-                    clientErrorType = 'DATABASE_ERROR';
+                    errorCode = 'DATABASE_ERROR';
                     console.error('Column Not Found - Check column name!', {
                         code: pgError.code,
                         message: pgError.message,
@@ -134,7 +134,7 @@ export class GlobalError {
                 default:
                     statusCode = 500;
                     message = 'Internal server error';
-                    clientErrorType = 'DATABASE_ERROR';
+                    errorCode = 'DATABASE_ERROR';
                     // Log unhandled codes for monitoring
                     console.error(
                         `Unhandled PostgreSQL error code: ${pgError.code}`,
@@ -167,7 +167,7 @@ export class GlobalError {
             // Generic message for production
             statusCode = 500;
             message = 'Internal server error';
-            clientErrorType = 'INTERNAL_ERROR';
+            errorCode = 'INTERNAL_ERROR';
             isOperational = false;
         }
 
@@ -175,7 +175,7 @@ export class GlobalError {
         const response: any = {
             success,
             message,
-            errorType: clientErrorType, // Frontend can use this
+            errorCode,
             isOperational,
             timestamp: new Date().toISOString(),
         };
@@ -215,7 +215,7 @@ export class GlobalError {
         res.status(404).json({
             success: false,
             message: `Route ${req.originalUrl} not found`,
-            errorType: 'ROUTE_NOT_FOUND',
+            severity: 'ROUTE_NOT_FOUND',
             isOperational: true,
             timestamp: new Date().toISOString(),
         });
