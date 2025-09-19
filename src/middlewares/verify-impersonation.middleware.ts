@@ -5,6 +5,7 @@ import { CustomError } from '../utils/custom-error';
 
 export const verifyImpersonation = catchAsync((req, res, next) => {
     const { user } = req;
+    let effectiveUser = user;
 
     if (user?.role === UserRole.ADMIN) {
         const token = req.cookies.impersonationToken;
@@ -21,6 +22,7 @@ export const verifyImpersonation = catchAsync((req, res, next) => {
                         id: decoded.id,
                         role: decoded.role,
                     };
+                    effectiveUser = req.impersonatedUser;
                 }
             } catch {
                 throw CustomError.authenticationFailed();
@@ -28,10 +30,9 @@ export const verifyImpersonation = catchAsync((req, res, next) => {
         }
     }
 
-    const targetUser = req.impersonatedUser || user;
-    if (!targetUser) {
+    if (!effectiveUser) {
         throw CustomError.authenticationFailed();
     }
-    req.effectiveUser = targetUser;
+    req.effectiveUser = effectiveUser;
     return next();
 });
