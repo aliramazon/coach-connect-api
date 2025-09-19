@@ -215,7 +215,7 @@ export class GlobalError {
         res.status(404).json({
             success: false,
             message: `Route ${req.originalUrl} not found`,
-            severity: 'ROUTE_NOT_FOUND',
+            errorCode: 'ROUTE_NOT_FOUND',
             isOperational: true,
             timestamp: new Date().toISOString(),
         });

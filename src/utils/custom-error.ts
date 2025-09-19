@@ -1,11 +1,8 @@
-interface ErrorDetails {
-    [key: string]: any;
-
+export interface ErrorDetails {
     field?: string;
-    fields?: Record<string, string>;
-    code?: string;
-    context?: Record<string, any>;
-    metadata?: Record<string, any>;
+    fields?: Record<string, { message: string; reason?: string }>;
+    reason?: string;
+    meta?: Record<string, any>;
 }
 
 export class CustomError extends Error {
@@ -30,7 +27,7 @@ export class CustomError extends Error {
         this.severity = statusCode.toString().startsWith('4')
             ? 'fail'
             : 'error';
-        this.errorCode = errorCode || this.getDefaultClientType(statusCode);
+        this.errorCode = errorCode || this.getDefaulterrorCode(statusCode);
         this.isOperational = true;
         this.details = details;
         this.timestamp = new Date();
@@ -39,7 +36,7 @@ export class CustomError extends Error {
         Error.captureStackTrace(this, this.constructor);
     }
 
-    private getDefaultClientType(statusCode: number): string {
+    private getDefaulterrorCode(statusCode: number): string {
         const typeMap: Record<number, string> = {
             400: 'VALIDATION_ERROR',
             401: 'AUTHENTICATION_ERROR',
@@ -70,78 +67,78 @@ export class CustomError extends Error {
 
     static badRequest(
         message: string,
-        clientType?: string,
+        errorCode?: string,
         details?: ErrorDetails,
     ) {
         return new CustomError(
             message,
             400,
-            clientType || 'VALIDATION_ERROR',
+            errorCode || 'VALIDATION_ERROR',
             details,
         );
     }
 
     static authenticationFailed(
         message: string = 'Invalid credentials',
-        clientType?: string,
+        errorCode?: string,
         details?: ErrorDetails,
     ) {
         return new CustomError(
             message,
             401,
-            clientType || 'AUTHENTICATION_ERROR',
+            errorCode || 'AUTHENTICATION_ERROR',
             details,
         );
     }
 
     static forbidden(
         message: string = 'Not authorized',
-        clientType?: string,
+        errorCode?: string,
         details?: ErrorDetails,
     ) {
         return new CustomError(
             message,
             403,
-            clientType || 'AUTHORIZATION_ERROR',
+            errorCode || 'AUTHORIZATION_ERROR',
             details,
         );
     }
 
     static notFound(
         message: string = 'Resource not found',
-        clientType?: string,
+        errorCode?: string,
         details?: ErrorDetails,
     ) {
         return new CustomError(
             message,
             404,
-            clientType || 'RESOURCE_NOT_FOUND',
+            errorCode || 'RESOURCE_NOT_FOUND',
             details,
         );
     }
 
     static conflict(
         message: string = 'Resource conflict',
-        clientType?: string,
+        errorCode?: string,
         details?: ErrorDetails,
     ) {
         return new CustomError(
             message,
             409,
-            clientType || 'RESOURCE_CONFLICT',
+            errorCode || 'RESOURCE_CONFLICT',
             details,
         );
     }
 
     static validation(
         message: string,
-        clientType?: string,
+        errorCode?: string,
         details?: ErrorDetails,
     ) {
         return new CustomError(
             message,
             422,
-            clientType || 'VALIDATION_ERROR',
+            errorCode || 'VALIDATION_ERROR',
             details,
         );
     }
@@ -177,10 +174,10 @@ export class ValidationError extends CustomError {
 export class AuthenticationError extends CustomError {
     constructor(
         message: string = 'Authentication required',
-        clientType?: string,
+        errorCode?: string,
         details?: ErrorDetails,
     ) {
-        super(message, 401, clientType || 'AUTHENTICATION_ERROR', details);
+        super(message, 401, errorCode || 'AUTHENTICATION_ERROR', details);
     }
 }
 
