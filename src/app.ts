@@ -3,6 +3,7 @@ import cors from 'cors';
 import express from 'express';
 import { corsOptions } from './config/cors';
 import { GlobalError } from './middlewares/global-error.middleware';
+import { slotRouter } from './routes/slot.routes';
 import { userRouter } from './routes/user.routes';
 
 export const createApp = () => {
@@ -17,6 +18,7 @@ export const createApp = () => {
     });
 
     app.use('/api/users', userRouter);
+    app.use('/api/slots', slotRouter);
 
     app.use(GlobalError.notFound);
     app.use(GlobalError.handle);
