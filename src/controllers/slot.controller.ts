@@ -11,6 +11,18 @@ const create = catchAsync(async (req, res) => {
     });
 });
 
+const getAll = catchAsync(async (req, res) => {
+    const { effectiveUser } = req;
+    const slots = await slotService.getAll(effectiveUser?.id!);
+
+    res.status(200).json({
+        success: true,
+        message: 'Success',
+        data: { slots },
+    });
+});
+
 export const slotController = {
     create,
+    getAll,
 };

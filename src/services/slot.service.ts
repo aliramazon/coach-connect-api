@@ -41,4 +41,13 @@ const create = async (
     return slot;
 };
 
-export const slotService = { create };
+const getAll = async (coachId: string) => {
+    const slots = await prisma.slot.findMany({
+        where: {
+            coachId,
+        },
+    });
+    return slots;
+};
+
+export const slotService = { create, getAll };

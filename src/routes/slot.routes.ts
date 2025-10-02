@@ -18,5 +18,6 @@ export const crudSlotMiddlewares = [
 ];
 
 slotRouter.post('/', ...crudSlotMiddlewares, slotController.create);
+slotRouter.get('/', ...crudSlotMiddlewares, slotController.getAll);
 
 export { slotRouter };
