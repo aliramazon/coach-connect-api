@@ -12,8 +12,14 @@ const create = catchAsync(async (req, res) => {
 });
 
 const getAll = catchAsync(async (req, res) => {
-    const { effectiveUser } = req;
-    const slots = await slotService.getAll(effectiveUser?.id!);
+    const { effectiveUser, query } = req;
+    const { date, timeZone } = query;
+
+    const slots = await slotService.getAll(
+        effectiveUser?.id!,
+        date as string | undefined,
+        timeZone as string | undefined,
+    );
 
     res.status(200).json({
         success: true,

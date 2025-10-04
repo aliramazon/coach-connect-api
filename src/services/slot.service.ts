@@ -1,4 +1,5 @@
-// service
+import { endOfDay, startOfDay } from 'date-fns';
+import { fromZonedTime } from 'date-fns-tz';
 import { Prisma, SlotStatus } from '../generated/prisma';
 import { prisma } from '../prisma';
 import { CustomError } from '../utils/custom-error';
@@ -41,12 +42,21 @@ const create = async (
     return slot;
 };
 
-const getAll = async (coachId: string) => {
+const getAll = async (coachId: string, date?: string, timeZone?: string) => {
+    const resolvedTimeZone = timeZone || 'UTC';
+    const targetDate = date ? new Date(date) : new Date();
+
+    const utcStart = fromZonedTime(startOfDay(targetDate), resolvedTimeZone);
+    const utcEnd = fromZonedTime(endOfDay(targetDate), resolvedTimeZone);
+
     const slots = await prisma.slot.findMany({
         where: {
             coachId,
+            startTime: { gte: utcStart, lt: utcEnd },
         },
+        orderBy: { startTime: 'asc' },
     });
+
     return slots;
 };
 
